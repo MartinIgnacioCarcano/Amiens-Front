@@ -378,6 +378,8 @@ tr {
     border-radius: 8px;
     width: 50%;
     max-width: 500px;
+    height: fit-content;
+    max-height: 80vh;
     color: #333333;
     /* Texto más oscuro */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -506,7 +508,13 @@ tr {
     justify-content: space-between;
     gap: 10px;
 }
-
+.table-modal-extraccion{
+    margin-top: 5px;
+    overflow-x: hidden;
+    height: fit-content;
+    max-height: 250px;
+    overflow-y: scroll;
+}
 /*-------------------------*/
 /* INGRESOS */
 /*-------------------------*/
@@ -640,6 +648,10 @@ tr {
         display: none;
     }
 
+    .table-modal-extraccion{
+        max-height: 350px;
+    }
+
     #productos-tab,
     #extracciones-table {
         max-width: 100%;
@@ -669,6 +681,8 @@ tr {
 
     .modal-content {
         width: 70vw;
+        height: fit-content;
+        max-height: 90vh;
     }
 
     #extraccion-descripcion-container{

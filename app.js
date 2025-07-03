@@ -506,7 +506,7 @@ function renderizarProductosEnExtraccion() {
             ? '' // Si estás editando, no mostramos acciones
             : `
                 <td>
-                    <button class="btn-eliminar-producto" data-id="${item.producto_id}">Eliminar</button>
+                    <button class="btn-eliminar-producto" data-id="${item.producto_id}">Borrar</button>
                     <button class="btn-editar-cantidad" data-id="${item.producto_id}">Editar</button>
                 </td>
             `;
