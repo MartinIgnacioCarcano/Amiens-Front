@@ -82,7 +82,6 @@ function logout() {
     document.getElementById('password').value = '';
 }
 
-
 function formatoFecha(fechaISO) {
     const fecha = new Date(fechaISO);
 
@@ -307,14 +306,14 @@ async function guardarProducto(event) {
     event.preventDefault();
     let productoId = document.getElementById('producto-id').value;
     const btnGuardar = event.target.querySelector('button[type="submit"]');
-    
+
     // Deshabilitar botón y cambiar apariencia
     btnGuardar.disabled = true;
     btnGuardar.style.backgroundColor = '#ccc';
     btnGuardar.style.cursor = 'not-allowed';
     btnGuardar.style.opacity = '0.6';
     btnGuardar.textContent = 'Guardando...';
-    
+
     try {
         if (productoId) {
             const productoData = {
@@ -391,6 +390,7 @@ async function loadExtracciones() {
     mostrarSpinner();
     try {
         todasExtracciones = await api.fetchExtracciones();
+        todasExtracciones.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
         usuarios = await api.getUsuarios();
         renderizarExtracciones(todasExtracciones);
     } catch (error) {
@@ -398,6 +398,29 @@ async function loadExtracciones() {
     } finally {
         ocultarSpinner(); // 👈 Ocultar spinner aunque haya error
     }
+}
+
+function renderizarExtracciones(extracciones) {
+    const tbody = document.getElementById('extracciones-lista');
+    tbody.innerHTML = '';
+
+    extracciones.forEach(extraccion => {
+        const row = document.createElement('tr');
+        const fecha = new Date(extraccion.fecha).toLocaleDateString();
+        const totalItems = extraccion.detalles.reduce((sum, d) => sum + d.cantidad, 0);
+        const productos = extraccion.detalles.map(d => todosProductos.find(p => p.id === d.producto_id)?.descripcion || `Producto ${d.producto_id}`).join(', ');
+        const usuario = usuarios.find(u => u.id == extraccion.usuario_id);
+        const nombreUsuario = usuario ? `${usuario.username}` : 'N/A';
+        row.innerHTML = `
+            <td>${fecha}</td>
+            <td>${extraccion.descripcion || 'Sin descripción'}</td>
+            <td>${productos}</td>
+            <td>${totalItems}</td>
+            <td>${nombreUsuario}</td>
+        `;
+        tbody.appendChild(row);
+        row.addEventListener('click', () => abrirModalExtraccion(extraccion));
+    });
 }
 
 function filtrarExtracciones() {
@@ -447,35 +470,11 @@ function filtrarExtracciones() {
     renderizarExtracciones(filtradas);
 }
 
-function renderizarExtracciones(extracciones) {
-    const tbody = document.getElementById('extracciones-lista');
-    tbody.innerHTML = '';
-
-    extracciones.forEach(extraccion => {
-        const row = document.createElement('tr');
-        const fecha = new Date(extraccion.fecha).toLocaleDateString();
-        const totalItems = extraccion.detalles.reduce((sum, d) => sum + d.cantidad, 0);
-        const productos = extraccion.detalles.map(d => todosProductos.find(p => p.id === d.producto_id)?.descripcion || `Producto ${d.producto_id}`).join(', ');
-        const usuario = usuarios.find(u => u.id == extraccion.usuario_id);
-        const nombreUsuario = usuario ? `${usuario.username}` : 'N/A';
-        row.innerHTML = `
-            <td>${fecha}</td>
-            <td>${extraccion.descripcion || 'Sin descripción'}</td>
-            <td>${productos}</td>
-            <td>${totalItems}</td>
-            <td>${nombreUsuario}</td>
-        `;
-        tbody.appendChild(row);
-        row.addEventListener('click', () => abrirModalExtraccion(extraccion));
-    });
-}
-
 // Función para abrir el modal
 async function abrirModalExtraccion(extraccion = null) {
     extraccionEditando = extraccion;
     const modal = document.getElementById('extraccion-modal');
     const title = document.getElementById('modal-extraccion-title');
-
 
     if (extraccion) {
         const usuario = usuarios.find(u => u.id == extraccion.usuario_id);
@@ -507,6 +506,26 @@ async function abrirModalExtraccion(extraccion = null) {
     }
 
     renderizarProductosEnExtraccion();
+    // Ahora ocultar o mostrar la columna "Stock"
+    const tabla = document.querySelector('.table-modal-extraccion table');
+    if (tabla) {
+        const thStock = tabla.querySelectorAll('thead th')[2];
+        if (extraccion) {
+            // Ocultar columna Stock (header y celdas)
+            if (thStock) thStock.style.display = 'none';
+            tabla.querySelectorAll('tbody tr').forEach(tr => {
+                const tdStock = tr.querySelectorAll('td')[2];
+                if (tdStock) tdStock.style.display = 'none';
+            });
+        } else {
+            // Mostrar columna Stock (header y celdas)
+            if (thStock) thStock.style.display = '';
+            tabla.querySelectorAll('tbody tr').forEach(tr => {
+                const tdStock = tr.querySelectorAll('td')[2];
+                if (tdStock) tdStock.style.display = '';
+            });
+        }
+    }
     modal.style.display = 'block';
 }
 
@@ -716,6 +735,7 @@ async function loadIngresos() {
     try {
         todosIngresos = await api.fetchIngresos();
         usuarios = await api.getUsuarios();
+        todosIngresos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
         renderizarIngresos(todosIngresos);
     } catch (error) {
         console.error('Error cargando ingresos:', error);
@@ -823,6 +843,25 @@ async function abrirModalIngreso(ingreso = null) {
     }
 
     renderizarProductosEnIngreso();
+    const tabla = document.querySelector('.table-modal-ingreso table');
+    if (tabla) {
+        const thStock = tabla.querySelectorAll('thead th')[2];
+        if (ingreso) {
+            // Ocultar columna Stock (header y celdas)
+            if (thStock) thStock.style.display = 'none';
+            tabla.querySelectorAll('tbody tr').forEach(tr => {
+                const tdStock = tr.querySelectorAll('td')[2];
+                if (tdStock) tdStock.style.display = 'none';
+            });
+        } else {
+            // Mostrar columna Stock (header y celdas)
+            if (thStock) thStock.style.display = '';
+            tabla.querySelectorAll('tbody tr').forEach(tr => {
+                const tdStock = tr.querySelectorAll('td')[2];
+                if (tdStock) tdStock.style.display = '';
+            });
+        }
+    }
     modal.style.display = 'block';
 }
 
@@ -916,7 +955,7 @@ function agregarProductoAIngreso() {
 
 async function guardarIngreso() {
     const btnGuardar = document.getElementById('guardar-ingreso');
-    
+
     if (productosParaIngreso.length === 0) {
         alert('Agregue al menos un producto');
         return;
@@ -953,20 +992,20 @@ async function guardarIngreso() {
 async function eliminarIngreso() {
     const id = document.getElementById('ingreso-id').value;
     const btnEliminar = document.getElementById('btn-eliminar-ingreso');
-    
+
     if (confirm('¿Está seguro de que desea eliminar este ingreso?')) {
         if (confirm('¿Quiere restar los productos al stock?')) {
             data = { 'devolver': 1 };
         } else {
             data = { 'devolver': 0 };
         }
-        
+
         // Deshabilitar botón y cambiar apariencia
         btnEliminar.disabled = true;
         btnEliminar.style.backgroundColor = '#ccc';
         btnEliminar.style.cursor = 'not-allowed';
         btnEliminar.style.opacity = '0.6';
-        
+
         try {
             await api.deleteIngreso(id, data);
             showToast('Ingreso eliminado correctamente', 'success');
@@ -980,7 +1019,7 @@ async function eliminarIngreso() {
             btnEliminar.style.cursor = 'pointer';
             btnEliminar.style.opacity = '1';
         }
-        
+
         await loadIngresos();
         cerrarModal();
     }
