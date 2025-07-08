@@ -1,4 +1,4 @@
-const API_URL = 'https://amiens-back-bxd2.onrender.com'; 
+const API_URL = 'https://gestorstock-back.onrender.com'; 
 //const API_URL = 'http://192.168.100.219:5000'; 
 const getAuthHeaders = () => {
     const token = localStorage.getItem('token');
