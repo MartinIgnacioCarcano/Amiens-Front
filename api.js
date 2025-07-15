@@ -1,5 +1,6 @@
 const API_URL = 'https://gestorstock-back.onrender.com'; 
-//const API_URL = 'http://192.168.100.219:5000'; 
+//const API_URL = "http://192.168.100.219:5000";
+
 const getAuthHeaders = () => {
     const token = localStorage.getItem('token');
     return {
@@ -10,17 +11,17 @@ const getAuthHeaders = () => {
 
 async function handleApiResponse(response) {
     const data = await response.json();
-    
+
     if (data.error === "El token ha expirado") {
         showToast(data.mensaje || 'La sesión ha expirado', 'error');
         cerrarSesion();
         throw new Error('Token expirado'); // Para detener la ejecución
     }
-    
+
     if (!response.ok) {
         throw new Error(data.message || 'Error en la solicitud');
     }
-    
+
     return data;
 };
 
@@ -35,8 +36,7 @@ const api = {
                 method: 'GET',
                 headers: getAuthHeaders()
             });
-            console.log('Response from /islogged:', response);
-
+            
             return response.ok;
         } catch (error) {
             console.error('Error verifying token:', error);
@@ -59,6 +59,7 @@ const api = {
             } else {
                 const data = await response.json();
                 localStorage.setItem('token', data.access_token); // Almacena el token en localStorage
+                localStorage.setItem('rol', data.rol); // Almacena el rol del usuario
                 return data;
             }
             // Podés almacenar el ID en localStorage si lo necesitás
@@ -89,7 +90,7 @@ const api = {
                 headers: getAuthHeaders(),
                 body: JSON.stringify(data)
             });
-            
+
             return await handleApiResponse(response);
         } catch (error) {
             console.error('Error creating producto:', error);
@@ -98,29 +99,37 @@ const api = {
     },
 
     updateProducto: async (id, data) => {
-        try {
-            const response = await fetch(`${API_URL}/productos/${id}`, {
-                method: 'PATCH',
-                headers: getAuthHeaders(),
-                body: JSON.stringify(data)
-            });
-            return await handleApiResponse(response);
-        } catch (error) {
-            console.error('Error updating producto:', error);
-            throw error;
+        if (localStorage.getItem('rol') !== 'admin') {
+            showToast('No tiene permisos para editar productos', 'error');
+        } else {
+            try {
+                const response = await fetch(`${API_URL}/productos/${id}`, {
+                    method: 'PATCH',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+                return await handleApiResponse(response);
+            } catch (error) {
+                console.error('Error updating producto:', error);
+                throw error;
+            }
         }
     },
 
     deleteProducto: async (id) => {
-        try {
-            const response = await fetch(`${API_URL}/productos/${id}`, {
-                method: 'DELETE',
-                headers: getAuthHeaders()
-            });
-            return await handleApiResponse(response);
-        } catch (error) {
-            console.error('Error deleting producto:', error);
-            throw error;
+        if (localStorage.getItem('rol') !== 'admin') {
+            showToast('No tiene permisos para editar productos', 'error');
+        } else {
+            try {
+                const response = await fetch(`${API_URL}/productos/${id}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+                return await handleApiResponse(response);
+            } catch (error) {
+                console.error('Error deleting producto:', error);
+                throw error;
+            }
         }
     },
 
@@ -155,16 +164,20 @@ const api = {
     },
 
     deleteExtraccion: async (id, data = {}) => {
-        try {
-            const response = await fetch(`${API_URL}/extracciones/${id}`, {
-                method: 'DELETE',
-                headers: getAuthHeaders(),
-                body: JSON.stringify(data)
-            });
-            return await handleApiResponse(response);
-        } catch (error) {
-            console.error('Error deleting extraccion:', error);
-            throw error;
+        if (localStorage.getItem('rol') !== 'admin') {
+            showToast('No tiene permisos para editar productos', 'error');
+        } else {
+            try {
+                const response = await fetch(`${API_URL}/extracciones/${id}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+                return await handleApiResponse(response);
+            } catch (error) {
+                console.error('Error deleting extraccion:', error);
+                throw error;
+            }
         }
     },
 
@@ -199,16 +212,20 @@ const api = {
     },
 
     deleteIngreso: async (id, data) => {
-        try {
-            const response = await fetch(`${API_URL}/ingresos/${id}`, {
-                method: 'DELETE',
-                headers: getAuthHeaders(),
-                body: JSON.stringify(data)
-            });
-            return await handleApiResponse(response);
-        } catch (error) {
-            console.error('Error deleting ingreso:', error);
-            throw error;
+        if (localStorage.getItem('rol') !== 'admin') {
+            showToast('No tiene permisos para editar productos', 'error');
+        } else {
+            try {
+                const response = await fetch(`${API_URL}/ingresos/${id}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+                return await handleApiResponse(response);
+            } catch (error) {
+                console.error('Error deleting ingreso:', error);
+                throw error;
+            }
         }
     },
 

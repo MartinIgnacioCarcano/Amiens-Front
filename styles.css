@@ -395,10 +395,12 @@ tr {
     display: flex;
     flex-direction: column;
     gap: 10px;
-
+    width: 100%;
 }
 
-
+.form-group{
+    width: 99%;
+}
 .form-group label {
     display: block;
     margin-bottom: 5px;
@@ -409,7 +411,7 @@ tr {
 
 .form-group input {
     width: 99%;
-    border: 1px solid #ddd;
+    border: 1px solid #646464;
     border-radius: 4px;
     padding: 8px;
     font-size: 1em;
@@ -423,12 +425,6 @@ tr {
     margin-top: 20px;
 
 }
-
-
-.form-group input {
-    border: 1px solid #646464;
-}
-
 
 /*-------------------------*/
 /* EXTRACCIONES */
@@ -704,7 +700,8 @@ tr {
         display: none;
     }
 
-    .table-modal-extraccion{
+    .table-modal-extraccion,
+    .table-modal-ingreso {
         max-height: 350px;
     }
 
@@ -814,6 +811,13 @@ tr {
     .login-container button {
         padding: 10px;
         font-size: 14px;
+    }
+    .modal-content{
+        max-height: 90vh;
+    }
+    .table-modal-extraccion,
+    .table-modal-ingreso {
+        max-height: 450px;
     }
 
 }

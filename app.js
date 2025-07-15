@@ -287,18 +287,30 @@ function mostrarFormularioProducto(producto = null) {
         document.getElementById('stock_minimo').value = producto.stock_minimo;
         document.getElementById('proveedor').value = producto.proveedor || '';
         document.getElementById('categoria').value = producto.categoria || '';
-        btnEliminar.style.display = 'block';
-        botones.style.justifyContent = 'space-between';
+        if (localStorage.getItem('rol') === 'admin') {
+            btnEliminar.style.display = 'block';
+            botones.style.display = 'flex';
+            botones.style.justifyContent = 'space-between';
+        } else {
+            btnEliminar.style.display = 'none';
+            botones.style.display = 'none';
+            form.style.marginBottom = '20px';
+        }
+        modal.style.display = 'block';
     } else {
         // Modo nuevo producto
-        title.textContent = 'Nuevo Producto';
-        form.reset();
-        document.getElementById('producto-id').value = '';
-        btnEliminar.style.display = 'none';
-        botones.style.justifyContent = 'flex-end';
+        if (localStorage.getItem('rol') === 'admin') {
+            title.textContent = 'Nuevo Producto';
+            form.reset();
+            document.getElementById('producto-id').value = '';
+            btnEliminar.style.display = 'none';
+            botones.style.display = 'flex';
+            botones.style.justifyContent = 'flex-end';
+            modal.style.display = 'block';
+        }else{
+            showToast('No tiene permisos para crear productos', 'error');
+        }
     }
-
-    modal.style.display = 'block';
 }
 
 // Función para guardar el producto (nuevo o editado)
@@ -491,7 +503,12 @@ async function abrirModalExtraccion(extraccion = null) {
         }));
         document.getElementById('acciones-header').style.display = 'none';
         document.getElementById('guardar-extraccion').style.display = 'none';
-        document.getElementById('btn-eliminar-producto-extraccion').style.display = 'block';
+        if (localStorage.getItem('rol') === 'admin') {
+            document.getElementById('btn-eliminar-producto-extraccion').style.display = 'block';
+        } else {
+            document.getElementById('btn-eliminar-producto-extraccion').style.display = 'none';
+        }
+        document.getElementById('cancelar-extraccion').style.display = 'none';
         document.getElementById('form-actions-extraccion').style.justifyContent = 'space-between';
     } else {
         title.textContent = 'Nueva Extracción';
@@ -499,6 +516,7 @@ async function abrirModalExtraccion(extraccion = null) {
         document.getElementById('agregar-producto-container').style.display = 'flex';
         document.getElementById('acciones-header').style.display = 'block';
         document.getElementById('guardar-extraccion').style.display = 'block';
+        document.getElementById('cancelar-extraccion').style.display = 'block';
         document.getElementById('extraccion-descripcion').value = '';
         document.getElementById('btn-eliminar-producto-extraccion').style.display = 'none';
         document.getElementById('form-actions-extraccion').style.justifyContent = 'flex-end';
@@ -819,7 +837,7 @@ async function abrirModalIngreso(ingreso = null) {
     if (ingreso) {
         const usuario = usuarios.find(u => u.id == ingreso.usuario_id);
         const nombreUsuario = usuario ? `${usuario.username}` : 'N/A';
-        title.textContent = `Ingreso: ${ingreso.descripcion || 'Sin descripción'} (${formatoFecha(ingreso.fecha)}) - ${nombreUsuario}`;
+        title.textContent = `Ingreso: (${formatoFecha(ingreso.fecha)}) - ${nombreUsuario}`;
         document.getElementById('agregar-producto-container-ingreso').style.display = 'none';
         document.getElementById('ingreso-id').value = ingreso.id;
         productosParaIngreso = ingreso.detalles.map(d => ({
@@ -830,13 +848,19 @@ async function abrirModalIngreso(ingreso = null) {
         }));
         document.getElementById('acciones-header-ingreso').style.display = 'none';
         document.getElementById('guardar-ingreso').style.display = 'none';
-        document.getElementById('btn-eliminar-ingreso').style.display = 'block';
+        if (localStorage.getItem('rol') === 'admin') {
+            document.getElementById('btn-eliminar-ingreso').style.display = 'block';
+        } else {
+            document.getElementById('btn-eliminar-ingreso').style.display = 'none';
+        }
+        document.getElementById('cancelar-ingreso').style.display = 'none';
         document.getElementById('form-actions-ingreso').style.justifyContent = 'space-between';
     } else {
         title.textContent = 'Nuevo Ingreso';
         document.getElementById('agregar-producto-container-ingreso').style.display = 'flex';
         document.getElementById('acciones-header-ingreso').style.display = 'block';
         document.getElementById('guardar-ingreso').style.display = 'block';
+        document.getElementById('cancelar-extraccion').style.display = 'block';
         document.getElementById('btn-eliminar-ingreso').style.display = 'none';
         document.getElementById('form-actions-ingreso').style.justifyContent = 'flex-end';
         productosParaIngreso = [];
