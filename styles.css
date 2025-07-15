@@ -813,7 +813,7 @@ tr {
         font-size: 14px;
     }
     .modal-content{
-        max-height: 90vh;
+        max-height: 85vh;
     }
     .table-modal-extraccion,
     .table-modal-ingreso {
