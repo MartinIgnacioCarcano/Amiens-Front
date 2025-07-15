@@ -815,7 +815,9 @@ tr {
     .modal-content{
         max-height: 85vh;
     }
-    .table-modal-extraccion,
+    .table-modal-extraccion{
+        max-height: 400px;
+    }
     .table-modal-ingreso {
         max-height: 450px;
     }
