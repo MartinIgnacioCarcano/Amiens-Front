@@ -1,4 +1,4 @@
-const API_URL = 'genuine-elysia-martin-carcano-626946df.koyeb.app'; 
+const API_URL = 'genuine-elysia-martin-carcano-626946df.koyeb.app/8000'; 
 //const API_URL = "http://192.168.100.219:5000";
 
 const getAuthHeaders = () => {
